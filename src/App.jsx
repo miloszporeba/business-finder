@@ -2,10 +2,54 @@ import { useState, useCallback } from 'react';
 import SearchForm from './components/SearchForm';
 import ResultsTable from './components/ResultsTable';
 import ProgressBar from './components/ProgressBar';
-import { searchBusinesses } from './services/api';
+import { searchBusinesses, authenticate, getToken } from './services/api';
 import './App.css';
 
+function LoginScreen({ onLogin }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      await authenticate(password);
+      onLogin();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-overlay">
+      <div className="login-box">
+        <h2>🔒 Business Finder</h2>
+        <p>Wpisz hasło aby uzyskać dostęp</p>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Hasło..."
+            autoFocus
+            disabled={loading}
+          />
+          <button type="submit" disabled={loading || !password}>
+            {loading ? 'Sprawdzam...' : 'Wejdź'}
+          </button>
+        </form>
+        {error && <div className="login-error">{error}</div>}
+      </div>
+    </div>
+  );
+}
+
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!getToken());
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +76,10 @@ function App() {
       setIsLoading(false);
     }
   }, []);
+
+  if (!isAuthenticated) {
+    return <LoginScreen onLogin={() => setIsAuthenticated(true)} />;
+  }
 
   return (
     <div className="app">

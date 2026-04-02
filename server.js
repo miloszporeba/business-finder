@@ -87,8 +87,31 @@ async function searchNearby(lat, lng, radiusMeters, query, pageToken) {
   return placesTextSearch(body, fieldMask);
 }
 
+// Endpoint autoryzacji
+app.post('/api/auth', (req, res) => {
+  const { password } = req.body || {};
+  const APP_PASSWORD = process.env.APP_PASSWORD;
+  if (!APP_PASSWORD) return res.status(500).json({ error: 'Hasło nie skonfigurowane' });
+  if (password === APP_PASSWORD) {
+    const token = Buffer.from(`${APP_PASSWORD}:${Date.now()}`).toString('base64');
+    return res.json({ ok: true, token });
+  }
+  return res.status(401).json({ error: 'Nieprawidłowe hasło' });
+});
+
 // Główny endpoint wyszukiwania
 app.get('/api/search', async (req, res) => {
+  // Sprawdź token
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Brak autoryzacji' });
+  try {
+    const decoded = Buffer.from(token, 'base64').toString();
+    if (!decoded.startsWith(`${process.env.APP_PASSWORD}:`)) {
+      return res.status(401).json({ error: 'Nieprawidłowy token' });
+    }
+  } catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
+
   const { location, radius } = req.query;
   if (!location) return res.status(400).json({ error: 'Brak lokalizacji' });
 

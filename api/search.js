@@ -109,6 +109,7 @@ export default async function handler(req, res) {
   const corsOrigin = isAllowed ? origin : ALLOWED_ORIGINS[0];
   res.setHeader('Access-Control-Allow-Origin', corsOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   // Tylko GET
@@ -120,6 +121,22 @@ export default async function handler(req, res) {
   const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.headers['x-real-ip'] || 'unknown';
   if (!checkRateLimit(ip)) {
     return res.status(429).json({ error: 'Zbyt wiele zapytań. Spróbuj za minutę.' });
+  }
+
+  // Sprawdź autoryzację (token z /api/auth)
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({ error: 'Brak autoryzacji. Zaloguj się.' });
+  }
+  try {
+    const decoded = Buffer.from(token, 'base64').toString();
+    const appPassword = process.env.APP_PASSWORD;
+    if (!decoded.startsWith(`${appPassword}:`)) {
+      return res.status(401).json({ error: 'Nieprawidłowy token.' });
+    }
+  } catch {
+    return res.status(401).json({ error: 'Nieprawidłowy token.' });
   }
 
   const { location, radius } = req.query;
