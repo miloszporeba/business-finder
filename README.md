@@ -1,49 +1,49 @@
 # 🏢 Business Finder
 
-Aplikacja webowa do wyszukiwania firm i działalności w okolicy dowolnej lokalizacji w Polsce. Korzysta z Google Maps Platform (Places API) i wyświetla wyniki w przejrzystej tabeli.
+A web application for searching businesses and services near any location in Poland. Powered by Google Maps Platform (Places API), displaying results in a clean, interactive table.
 
-## ✨ Funkcje
+## ✨ Features
 
-- 🔍 Wyszukiwanie firm po nazwie miejscowości lub adresie
-- 📍 Wybór promienia wyszukiwania (1–50 km)
-- 📊 Tabela wyników z sortowaniem i filtrowaniem
-- 📞 Dane kontaktowe: telefon, strona WWW, adres
-- ⭐ Oceny z Google Maps
-- 📥 Eksport wyników do CSV
-- 🔗 Bezpośrednie linki do Google Maps
-- 🔒 Zabezpieczenie hasłem
+- 🔍 Search businesses by city name or address
+- 📍 Adjustable search radius (1–50 km)
+- 📊 Sortable and filterable results table
+- 📞 Contact details: phone, website, address
+- ⭐ Google Maps ratings
+- 📥 Export results to CSV
+- 🔗 Direct links to Google Maps
+- 🔒 Password-protected access
 
-## 🛠 Technologie
+## 🛠 Tech Stack
 
 - **Frontend:** React 19 + Vite
 - **Backend:** Vercel Serverless Functions
 - **API:** Google Places API (New) — Text Search
 - **Hosting:** Vercel
 
-## 🚀 Uruchomienie lokalne
+## 🚀 Local Development
 
 ```bash
-# Zainstaluj zależności
+# Install dependencies
 npm install
 
-# Utwórz plik .env z kluczami
-echo "GOOGLE_PLACES_API_KEY=twoj_klucz" > .env
-echo "APP_PASSWORD=twoje_haslo" >> .env
+# Create .env file with your keys
+echo "GOOGLE_PLACES_API_KEY=your_key" > .env
+echo "APP_PASSWORD=your_password" >> .env
 
-# Uruchom (frontend + backend)
+# Run (frontend + backend)
 npm run dev
 ```
 
-Aplikacja będzie dostępna pod `http://localhost:5173`.
+The app will be available at `http://localhost:5173`.
 
-## 📦 Deploy na Vercel
+## 📦 Deploy to Vercel
 
-1. Wrzuć repo na GitHub
-2. Połącz z Vercel
-3. Dodaj zmienne środowiskowe:
-   - `GOOGLE_PLACES_API_KEY` — klucz do Google Places API
-   - `APP_PASSWORD` — hasło dostępu do aplikacji
+1. Push the repo to GitHub
+2. Connect it to Vercel
+3. Add environment variables:
+   - `GOOGLE_PLACES_API_KEY` — Google Places API key
+   - `APP_PASSWORD` — application access password
 
-## 📝 Licencja
+## 📝 License
 
-Projekt prywatny.
+Private project.
