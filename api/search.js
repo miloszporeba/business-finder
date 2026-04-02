@@ -72,11 +72,55 @@ async function searchNearby(lat, lng, radiusMeters, query, pageToken) {
   return placesTextSearch(body, fieldMask);
 }
 
+// --- Proste zabezpieczenia ---
+const ALLOWED_ORIGINS = [
+  'https://business-finder-nine.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+// Rate limiting per IP (in-memory, resetuje się przy cold start ~co kilka min)
+const rateLimit = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minuta
+const RATE_LIMIT_MAX = 5; // max 5 wyszukiwań / minutę / IP
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const entry = rateLimit.get(ip);
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW) {
+    rateLimit.set(ip, { windowStart: now, count: 1 });
+    return true;
+  }
+  entry.count++;
+  if (entry.count > RATE_LIMIT_MAX) return false;
+  return true;
+}
+
 export default async function handler(req, res) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Sprawdź origin — zezwól tylko na Twoją domenę i localhost
+  const origin = req.headers.origin || req.headers.referer || '';
+  const isAllowed = ALLOWED_ORIGINS.some(o => origin.startsWith(o));
+
+  if (origin && !isAllowed) {
+    return res.status(403).json({ error: 'Niedozwolone źródło' });
+  }
+
+  // CORS — tylko dla dozwolonych originów
+  const corsOrigin = isAllowed ? origin : ALLOWED_ORIGINS[0];
+  res.setHeader('Access-Control-Allow-Origin', corsOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Tylko GET
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Metoda niedozwolona' });
+  }
+
+  // Rate limit per IP
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.headers['x-real-ip'] || 'unknown';
+  if (!checkRateLimit(ip)) {
+    return res.status(429).json({ error: 'Zbyt wiele zapytań. Spróbuj za minutę.' });
+  }
 
   const { location, radius } = req.query;
   if (!location) return res.status(400).json({ error: 'Brak lokalizacji' });
