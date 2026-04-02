@@ -1,16 +1,49 @@
-# React + Vite
+# 🏢 Business Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikacja webowa do wyszukiwania firm i działalności w okolicy dowolnej lokalizacji w Polsce. Korzysta z Google Maps Platform (Places API) i wyświetla wyniki w przejrzystej tabeli.
 
-Currently, two official plugins are available:
+## ✨ Funkcje
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 🔍 Wyszukiwanie firm po nazwie miejscowości lub adresie
+- 📍 Wybór promienia wyszukiwania (1–50 km)
+- 📊 Tabela wyników z sortowaniem i filtrowaniem
+- 📞 Dane kontaktowe: telefon, strona WWW, adres
+- ⭐ Oceny z Google Maps
+- 📥 Eksport wyników do CSV
+- 🔗 Bezpośrednie linki do Google Maps
+- 🔒 Zabezpieczenie hasłem
 
-## React Compiler
+## 🛠 Technologie
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend:** React 19 + Vite
+- **Backend:** Vercel Serverless Functions
+- **API:** Google Places API (New) — Text Search
+- **Hosting:** Vercel
 
-## Expanding the ESLint configuration
+## 🚀 Uruchomienie lokalne
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# Zainstaluj zależności
+npm install
+
+# Utwórz plik .env z kluczami
+echo "GOOGLE_PLACES_API_KEY=twoj_klucz" > .env
+echo "APP_PASSWORD=twoje_haslo" >> .env
+
+# Uruchom (frontend + backend)
+npm run dev
+```
+
+Aplikacja będzie dostępna pod `http://localhost:5173`.
+
+## 📦 Deploy na Vercel
+
+1. Wrzuć repo na GitHub
+2. Połącz z Vercel
+3. Dodaj zmienne środowiskowe:
+   - `GOOGLE_PLACES_API_KEY` — klucz do Google Places API
+   - `APP_PASSWORD` — hasło dostępu do aplikacji
+
+## 📝 Licencja
+
+Projekt prywatny.
